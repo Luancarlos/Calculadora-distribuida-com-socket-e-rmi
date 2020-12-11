@@ -2,6 +2,8 @@ package calculadora.socket;
 
 import calculadora.protocolo.ProtocoloRequest;
 import calculadora.protocolo.ProtocoloResponse;
+import calculadora.rmi.IOperacaoAvancada;
+import calculadora.rmi.IOperacaoBasica;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,12 +16,16 @@ class ClientHandler extends Thread {
     final DataInputStream dis;
     final DataOutputStream dos;
     final Socket s;
+    final IOperacaoBasica operacaoBasica;
+    final IOperacaoAvancada operacaoAvancada;
 
     // Constructor
-    public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos) {
+    public ClientHandler(Socket s, DataInputStream dis, DataOutputStream dos, IOperacaoBasica operacaoBasica, IOperacaoAvancada operacaoAvancada) {
         this.s = s;
         this.dis = dis;
         this.dos = dos;
+        this.operacaoBasica = operacaoBasica;
+        this.operacaoAvancada = operacaoAvancada;
     }
 
     @Override
@@ -48,37 +54,43 @@ class ClientHandler extends Thread {
 
                     switch (protocolo.getOperador()) {
                         case "^" :
-                            int po = (int) Math.pow(protocolo.getValor1(), protocolo.getValor2());
+                            int po = operacaoAvancada.potenciacao(protocolo.getValor1(), protocolo.getValor2());
+
                             protocoloResponse.setCode(C10);
                             protocoloResponse.setMensagem(String.valueOf(po));
                             break;
 
                         case "%" :
-                            String resultado = String.valueOf((protocolo.getValor1() * protocolo.getValor2()) / 100);
+                            double porcent = operacaoAvancada.portecentagem(protocolo.getValor1(), protocolo.getValor2());
+
                             protocoloResponse.setCode(C10);
-                            protocoloResponse.setMensagem(resultado);
+                            protocoloResponse.setMensagem(String.valueOf(porcent));
                             break;
 
                         case "+" :
-                            int soma = (int) (protocolo.getValor1() + protocolo.getValor2());
+                            int soma = operacaoBasica.adicao(protocolo.getValor1(), protocolo.getValor2());
+
                             protocoloResponse.setCode(C10);
                             protocoloResponse.setMensagem(String.valueOf(soma));
                             break;
 
                         case "-" :
-                            int sub = (int) (protocolo.getValor1() - protocolo.getValor2());
+                            int sub = operacaoBasica.subtracao(protocolo.getValor1(), protocolo.getValor2());
+
                             protocoloResponse.setCode(C10);
                             protocoloResponse.setMensagem(String.valueOf(sub));
                             break;
 
                         case "*" :
-                            int mult = (int) (protocolo.getValor1() * protocolo.getValor2());
+                            int mult = operacaoBasica.multiplicacao(protocolo.getValor1(), protocolo.getValor2());
+
                             protocoloResponse.setCode(C10);
                             protocoloResponse.setMensagem(String.valueOf(mult));
                             break;
 
                         case "√" :
-                            double raiz = Math.sqrt(protocolo.getValor2());
+                            double raiz = operacaoAvancada.radiacao(protocolo.getValor2());
+
                             protocoloResponse.setCode(C10);
                             protocoloResponse.setMensagem(String.valueOf(raiz));
                             break;
@@ -88,9 +100,9 @@ class ClientHandler extends Thread {
                                 protocoloResponse.setCode(C20);
                                 protocoloResponse.setMensagem("Não é um numero");
                             } else {
-                                String result = String.valueOf(protocolo.getValor1() / protocolo.getValor2());
+                                double div = operacaoBasica.divisao(protocolo.getValor1(), protocolo.getValor2());
                                 protocoloResponse.setCode(C10);
-                                protocoloResponse.setMensagem(result);
+                                protocoloResponse.setMensagem(String.valueOf(div));
                             }
 
                             break;

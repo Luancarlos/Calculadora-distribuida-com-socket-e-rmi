@@ -15,7 +15,12 @@ public class OperacaoAvancada extends UnicastRemoteObject implements IOperacaoAv
     }
 
     @Override
-    public Integer radiacao(double n1) throws RemoteException {
-        return (int) Math.sqrt(n1);
+    public double radiacao(double n1) throws RemoteException {
+        return Math.sqrt(n1);
+    }
+
+    @Override
+    public double portecentagem(double n1, double n2) throws RemoteException {
+        return ((n1 * n2) / 100);
     }
 }

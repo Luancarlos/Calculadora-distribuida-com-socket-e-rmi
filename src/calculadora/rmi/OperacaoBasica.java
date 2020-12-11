@@ -19,8 +19,8 @@ public class OperacaoBasica extends UnicastRemoteObject implements IOperacaoBasi
     }
 
     @Override
-    public Integer divisao(double n1, double n2) {
-        return (int) (n2 == 0 ? 0 : n1 / n2);
+    public double divisao(double n1, double n2) {
+        return (n2 == 0 ? 0 : n1 / n2);
     }
     @Override
     public Integer multiplicacao(double n1, double n2) {
